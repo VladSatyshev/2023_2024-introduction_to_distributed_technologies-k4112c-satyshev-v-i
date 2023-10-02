@@ -30,7 +30,7 @@ manifest.yaml (object definition) составляется в соответст
 
 Далее требуется запустить описанный Pod:
 ```bash
-kubectl apply -f manifest.yaml
+minikube kubectl -- apply -f manifest.yaml
 ```
 Результат выполнения команды представлен на рисунке:
 ![Рисунок 2](images/2.PNG)

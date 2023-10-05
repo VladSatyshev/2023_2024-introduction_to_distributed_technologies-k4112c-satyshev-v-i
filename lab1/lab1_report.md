@@ -19,7 +19,9 @@ minikube start --driver=docker
 
 # 2. Манифест для развертывания "пода" HashiCorp Vault
 Манифест для развертывания "пода" HashiCorp Vault прилагается.
-Комментарии по содержанию manifest.yaml:
+
+Комментарии по содержанию manifest.yaml: 
+
 manifest.yaml (object definition) составляется в соответствии с object model Kubernetes, которая включает в себя ряд обязательных полей:
 - `apiVersion` - используемая версия API;
 - `kind` - тип описываемого объекта;
@@ -39,7 +41,9 @@ minikube kubectl -- apply -f manifest.yaml
 > In Kubernetes, a Service is a method for exposing a network application that is running as one or more Pods in your cluster. 
 > You use a Service to make that set of Pods available on the network so that clients can interact with it.
 
-Для создания сервиса можно воспользоваться `kubectl expose`, который находит controller, service, replica set или pod по имени и делает его доступным извне (expose) в качестве нового сервиса Kubernetes. Флаг `--type=NodePort` указывает, что необходимо сделать доступным извне указанный далее порт (`--port=8200`).
+Для создания сервиса можно воспользоваться `kubectl expose`, который находит controller, service, replica set или pod по имени и делает его доступным извне (expose) с помощью нового сервиса Kubernetes. Флаг `--type=NodePort` указывает, что используется тип сервиса `NodePort` с выбранным портом `--port=8200`. Это значит, что при подключении к ноду по порту `8200` нод будет перенаправлять трафик на ClusterIP созданного сервиса (который, в свою очередь, перенаправляет трафик на под).
+ClusterIP - IP адрес, присвоенный сервису (доступен только внутри кластера).
+
 Итак, создадим сервис для доступа к созданному контейнеру:
 ```bash
 minikube kubectl -- expose pod vault --type=NodePort --port=8200
@@ -68,12 +72,13 @@ minikube kubectl logs vault
 
 # 6. Схема организации контейеров и сервисов
 Схема организации контейеров и сервисов представлена на рисунке:
-![Рисунок 6](images/6.PNG)
+![Рисунок 6](images/6_v2.PNG)
 
 - kube-apiserver - API сервер, который связывает управляющие комоненты Control Plane с нодами кластера;
 - kube-scheduler - используется для создания новых объектов рабочей нагузки (workload objects);
-- kube-controller-manager - постоянно работающий процесс, который сравнивает текущее состояние кластера с желаемым. В случае несоответствия принимает меры по приведению состояния к желаемому.
+- kube-controller-manager - постоянно работающий процесс, который сравнивает текущее состояние кластера с желаемым. В случае несоответствия принимает меры по приведению состояния к желаемому. 
 - etcd - это строго согласованное, распределенное хранилище данных «ключ-значение», используемое для сохранения состояния кластера Kubernetes.
 - docker engine - Kubernetes требует наличия среды выполнения контейнеров на нодах, т.к. на них запускаются контейнеры.
 - kubelet - процесс, взаимодействующий с control plane: получает определения пода и взаимодействует со средой выполнения контейнеров для запуска указанных контейнеров. Также выполняет мониторинг состояния и ресурсов подов.
-- kube-proxy - процесс, ответственный за динамические обновления и обслуживание всех сетевых правил на ноде, перенаправляет внешние запросы в контейнеры.
+- kube-proxy - процесс, ответственный за динамические обновления и обслуживание всех сетевых правил на ноде. В частности, за настройку iptables:
+>For each new Service, on each node, **kube-proxy** configures **iptables** rules to capture the traffic for its **ClusterIP** and forwards it to one of the Service's endpoints

@@ -6,7 +6,7 @@ Group: K4112c
 Author: Satyshev Vladislav Igorevich
 Lab: Lab1
 Date of create: 01.10.2023
-Date of finished:
+Date of finished: 05.10.2023
 
 
 # 1. Установка Docker и minikube

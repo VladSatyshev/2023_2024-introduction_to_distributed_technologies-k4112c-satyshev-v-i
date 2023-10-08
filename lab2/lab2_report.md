@@ -35,6 +35,7 @@ data:
 minikube kubectl -- apply -f config_map_manifest.yaml
 ```
 Покажем, что `ConfigMap` был успешно создан:
+
 ![Рисунок 1](images/1.PNG)
 
 Заметим также, что для скачивания требуемого образа необходима авторизация в Docker Hub. В связи с этим создадим `Secret`, содержащий конфигурационные данные.
@@ -48,7 +49,9 @@ minikube kubectl -- create secret docker-registry regcred \
   --docker-email=sateshev5@yandex.ru \
 ```
 Данная команда создает `Secret` с именем `regcred`, содержащий аутентификационные данные для Docker Hub.
+
 Покажем, что `Secret` был успешно создан:
+
 ![Рисунок 2](images/2.PNG)
 
 Создадим `Deployment` с двумя репликами контейнера [ifilyaninitmo/itdt-contained-frontend:master](https://hub.docker.com/layers/ifilyaninitmo/itdt-contained-frontend/master/images/sha256-08756f1022aea55538e740562aa980b56be6241d2166e6d8d6521386e0876dbe?context=explore).
@@ -99,8 +102,8 @@ spec:
 - `.spec.replicas` - указывает количество реплик;
 - `.spec.selector` - указывает каким образом созданный `ReplicaSet` должен определить, каким из `Pod` управлять. В данном случае используется селектор по label (`matchLabels`), который указывает, что `ReplicaSet` управляет `Pod` у которых имеется label `app` со значением `react`;
 `template` - описывает шаблон по которому будут создаваться реплики: указывается соответсвующий label (`app: react`) и спецификация;
-- В спецификации указывается название контейнра (`name: react-container`), образ, на основе которого контейнер создается (`image: ifilyaninitmo/itdt-contained-frontend:master`), переменные окружения, с требуемыми в описании контейнера названиями (`REACT_APP_USERNAME`, `REACT_APP_COMPANY_NAME`), взятые из созданного ранее `ConfigMap`. `ConfigMap` находится по его имени (`name: config-map-react`), а значения - по указанным в `ConfigMap` ключам (`key: username`, `key: companyName`). Поле `ContainerPort` указывает порт контейнера, который будет доступен для кластера Kubernetes.
-- `imagePullSecrets` - указывает, какой `Secret` использовать.
+- В спецификации указывается название контейнра (`name: react-container`), образ, на основе которого контейнер создается (`image: ifilyaninitmo/itdt-contained-frontend:master`), переменные окружения, с требуемыми в описании контейнера названиями (`REACT_APP_USERNAME`, `REACT_APP_COMPANY_NAME`), взятые из созданного ранее `ConfigMap`. `ConfigMap` находится по его имени (`name: config-map-react`), а значения переменных - по указанным в `ConfigMap` ключам (`key: username`, `key: companyName`). Поле `ContainerPort` указывает порт контейнера, который будет доступен для кластера Kubernetes.
+- `imagePullSecrets` - указывает, какой `Secret` использовать при скачивании образа.
 
 Покажем, что `Deployment` был успешно создан:
 ![Рисунок 3](images/3.PNG)

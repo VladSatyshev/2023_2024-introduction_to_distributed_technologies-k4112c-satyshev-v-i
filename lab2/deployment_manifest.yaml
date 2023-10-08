@@ -29,6 +29,6 @@ spec:
               name: config-map-react
               key: companyName  
         ports:
-        - containerPort: 80
+        - containerPort: 3000 
       imagePullSecrets:
       - name: regcred

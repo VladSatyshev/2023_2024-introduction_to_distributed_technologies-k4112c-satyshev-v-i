@@ -9,6 +9,10 @@ metadata:
     #nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   ingressClassName: "nginx"
+  tls:
+  - hosts:
+    - react-test.app
+    secretName: mkcert
   rules:
     - host: react-test.app
       http:

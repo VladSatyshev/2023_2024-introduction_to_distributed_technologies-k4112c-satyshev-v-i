@@ -158,6 +158,7 @@ minikube kubectl -- port-forward service/react-service 3000:3000
 Как можно видеть из представленного выше скриншота значения переменных `REACT_APP_USERNAME`, `REACT_APP_COMPANY_NAME` и `Container name` доступны внутри контейнера.
 - Доступность переменных `REACT_APP_USERNAME` и `REACT_APP_COMPANY_NAME` можно объяснить использованием `ConfigMap` (рассмотрено в п.1).
 - Доступность переменной `Container name` можно объяснить тем, что в контейнерах Kubernetes имя пода хранится в виде переменной окружения `HOSTNAME`. [source](https://kubernetes.io/docs/concepts/containers/container-environment/) 
+
 Покажем это, выполнив внутри пода следующие команды:
 ```bash
 minikube kubectl -- exec react-deployment-7bd88477fb-4xxcv -- printenv REACT_APP_USERNAME

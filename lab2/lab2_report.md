@@ -4,7 +4,7 @@ Course: [Introduction to distributed technologies](https://github.com/itmo-ict-f
 Year: 2023/2024
 Group: K4112c
 Author: Satyshev Vladislav Igorevich
-Lab: Lab1
+Lab: Lab2
 Date of create: 08.10.2023
 Date of finished: 
 

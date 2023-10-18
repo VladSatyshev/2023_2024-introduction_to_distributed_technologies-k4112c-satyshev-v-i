@@ -55,7 +55,7 @@ spec:
 ```
 
 - `spec.cidr` - указывается диапазон IP адресов, принадлежащих данному `IPPool` в соответствии с CIDR нотацией. В данном случае в создаваемый `IPPool` входят следующие IP адреса: `192.168.0.1`, `192.168.0.2`, ..., `192.168.0.254`.
-- `spec.ipipMode: Always` - при установке `ipipMode: Always` Calico маршрутизирует весь трафик от хостов, поддерживающих Calico, используя "IP в IP", ко всем сетевым контейнерам и виртуальным машинам Calico в `IPPool` ([source])(https://docs.tigera.io/calico/latest/networking/configuring/vxlan-ipip#configure-ip-in-ip-encapsulation-for-all-inter-workload-traffic).
+- `spec.ipipMode: Always` - при установке `ipipMode: Always` Calico маршрутизирует весь трафик от хостов, поддерживающих Calico, используя "IP в IP", ко всем сетевым контейнерам и виртуальным машинам Calico в `IPPool` ([source](https://docs.tigera.io/calico/latest/networking/configuring/vxlan-ipip#configure-ip-in-ip-encapsulation-for-all-inter-workload-traffic)).
 "IP in IP" — это протокол IP-туннелирования, который инкапсулирует один IP-пакет в другой IP-пакет. Это позволяет данным пересекать различные границы сети, сохраняя при этом информацию исходного IP-пакета в инкапсулированной структуре.
 - `spec.natOutgoing: true` - включает outgoing NAT. Данный параметр необходим для того, чтобы обеспечить доступ `Pod` к IP адресам вне `IPPool` Calico ([source](https://docs.tigera.io/calico/latest/networking/configuring/workloads-outside-cluster#enable-nat-for-pods-with-ip-addresses-that-are-not-routable-beyond-the-cluster)). В данной работе значение этого параметра не критично, т.к. обеспечения такого рода взаимодействия не требуется.
 - `nodeSelector` - селектор `Node`, подам которых будет присвоен соответствующий `IPPool`. В данном случае требуется наличие `label` `rack: 0`.
@@ -113,4 +113,20 @@ kubectl exec -it <pod_name> -- bin/sh/
 ![Рисунок 10](images/10.PNG)
 
 # 6. Схема организации контейеров и сервисов
-WIP
+
+Схема организации контейеров и сервисов представлена на рисунке:
+
+![Рисунок 11](images/11.PNG)
+
+- kube-apiserver - API сервер, который связывает различные объекты Kubernetes друг с другом;
+- kube-scheduler - используется для создания новых объектов рабочей нагузки (workload objects);
+- kube-controller-manager - постоянно работающий процесс, который сравнивает текущее состояние кластера с желаемым. В случае несоответствия принимает меры по приведению состояния к желаемому. 
+- etcd - строго согласованное, распределенное хранилище данных «ключ-значение», используемое для сохранения состояния кластера Kubernetes.
+- docker engine - Kubernetes требует наличия среды выполнения контейнеров на нодах, т.к. на них запускаются контейнеры.
+- kubelet - процесс, взаимодействующий с control plane: получает определения пода и взаимодействует со средой выполнения контейнеров для запуска указанных контейнеров. Также выполняет мониторинг состояния и ресурсов подов. В данном случае также отвечает за инициализацию переменных окружения из `ConfigMap` и аутентификацию с помощью `Secret`, информацию о которых получает посредством kube-apiserver. 
+- kube-proxy - процесс, ответственный за динамические обновления и обслуживание всех сетевых правил на ноде. В частности, за настройку iptables.
+- CoreDNS - DNS сервер. Взаимодействует с kube-apiserver для получения информации о новых `Pod`. При необходимости выполнить DNS resolution со стороны `Pod`, `Pod` обращается в CoreDNS.
+- Calico-Kube-Controller - Взаимодействует с kube-apiserver для мониторинга состояния кластера ([source](https://docs.tigera.io/calico/latest/reference/kube-controllers/configuration)).
+- Calico-Node - `Pod`, который создается Calico на каждом `Node` и который отвечает за:
+  - Программирование маршрутов (Route Programming). На основе известных маршрутов к `Pods` в кластере Kubernetes настраивает Linux хост `Node` для осуществления маршрутизации в соответствии с заданными требованиями.
+  - Совместное использование маршрутов (Route Sharing). На основе `Pods`, работающих на этом хосте, предоставляет механизм обмена известными маршрутами с другими хостами ([source](https://tanzu.vmware.com/developer/guides/container-networking-calico-refarch/#:~:text=calico%2Dnode&text=It%20is%20responsible%20for%202,known%20routes%20with%20other%20hosts.)).

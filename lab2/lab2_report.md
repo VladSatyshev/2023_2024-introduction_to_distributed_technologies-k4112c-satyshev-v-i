@@ -57,7 +57,9 @@ minikube kubectl -- create secret docker-registry regcred \
 Создадим `Deployment` с двумя репликами контейнера [ifilyaninitmo/itdt-contained-frontend:master](https://hub.docker.com/layers/ifilyaninitmo/itdt-contained-frontend/master/images/sha256-08756f1022aea55538e740562aa980b56be6241d2166e6d8d6521386e0876dbe?context=explore).
 
 `Deployment` предоставляет декларативные обновления для Pod и ReplicaSets. Принцип работы `Deployment` состоит в том, что создается описание желаемого состояния, после чего фактическое состояние стремится к желаемому за счет работы  deployment контроллера.
-`Deployment` может быть использован в [ряде случаев](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#use-case). В настоящей работе `Deployment` задействован для развертывания набора реплик (`ReplicaSet`). 
+`Deployment` может быть использован в [ряде случаев](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#use-case). 
+
+В данной работе `Deployment` задействован для развертывания набора реплик (`ReplicaSet`). 
 Цель `ReplicaSet` - поддерживать стабильный набор `Pod`, работающих в любой момент времени. Таким образом, `ReplicaSet` используется для гарантии доступности определенного количества идентичных `Pod`, что позволяет масштабировать проект горизонтально.
 
 Манифест для создания `Deployment` представлен далее:

@@ -6,7 +6,7 @@ Group: K4112c
 Author: Satyshev Vladislav Igorevich
 Lab: Lab2
 Date of create: 08.10.2023
-Date of finished: 
+Date of finished: 21.10.2023
 
 
 # 1. Создание deployment с двумя репликами контейнера

@@ -6,7 +6,7 @@ Group: K4112c
 Author: Satyshev Vladislav Igorevich
 Lab: Lab3
 Date of create: 12.10.2023
-Date of finished: 
+Date of finished: 21.10.2023
 
 
 # 1. Создание `ConfigMap`
